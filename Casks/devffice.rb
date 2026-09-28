@@ -1,17 +1,17 @@
-cask "workshop" do
-  version "0.2.1"
-  sha256 "63b315489eae6172ace2803b44bc0fd9350fd0ce07b8ba878d9d3baf97ccb46e"
+cask "devffice" do
+  version "0.3.0"
+  sha256 "a35d56b348430e799a41cb4b592128ab6de81b7563789c45bd1ed3879ed71dbd"
 
-  url "https://workshop-relay.m-kubanda1.workers.dev/download/workshop-#{version}-arm64.dmg"
-  name "workshop"
+  url "https://devffice.com/download/devffice-#{version}-arm64.dmg"
+  name "devffice"
   desc "Your Mac's terminal and editor, in any browser"
-  homepage "https://workshop-relay.m-kubanda1.workers.dev/"
+  homepage "https://devffice.com/"
 
   # Only an Apple Silicon DMG is published. Without this an Intel Mac installs a bundle it cannot
   # run and finds out at launch; brew should say so first.
   depends_on arch: :arm64
 
-  app "workshop.app"
+  app "devffice.app"
 
   # Homebrew quarantines what it downloads (Cask::Quarantine.cask! on the download, and the flag is
   # copied onto the app when it is moved into place). This build carries only an ad-hoc signature,
@@ -25,19 +25,19 @@ cask "workshop" do
   #
   # Delete this stanza the day the app is signed with a Developer ID and notarized.
   postflight_steps do
-    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/workshop.app"]
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/devffice.app"]
   end
 
-  uninstall quit:      "dev.workshop.app",
-            launchctl: "sk.kubanda.workshop"
+  uninstall quit:      "dev.devffice.app",
+            launchctl: "sk.kubanda.devffice"
 
   # Both live in the user's own home, so they are trashed rather than deleted: Homebrew runs every
   # `delete:` through sudo, and an uninstall that stops to ask for a password is worse than one that
   # leaves a plist behind. Kept on uninstall, removed by `brew zap`.
   #
-  # ~/.workshop holds the machine identity, pairing keys and the daemon log.
+  # ~/.devffice holds the machine identity, pairing keys and the daemon log.
   zap trash: [
-    "~/.workshop",
-    "~/Library/LaunchAgents/sk.kubanda.workshop.plist",
+    "~/.devffice",
+    "~/Library/LaunchAgents/sk.kubanda.devffice.plist",
   ]
 end
