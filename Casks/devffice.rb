@@ -1,6 +1,6 @@
 cask "devffice" do
-  version "0.3.0"
-  sha256 "a35d56b348430e799a41cb4b592128ab6de81b7563789c45bd1ed3879ed71dbd"
+  version "0.3.1"
+  sha256 "8aac83f2fdb69d8dc2af6f1344a9e6b32dd61d5a111fc577e02b794ea9b4b982"
 
   url "https://devffice.com/download/devffice-#{version}-arm64.dmg"
   name "devffice"
