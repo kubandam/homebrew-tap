@@ -1,41 +1,38 @@
 cask "devffice" do
-  version "0.3.8"
-  sha256 "3c594e5445e372e06a66d0e0873e7c759f2e0fe81e5a61e1b330a0994a0c7e4d"
+  version "0.4.0"
+  sha256 "980fe41b612c52b227ee5b8898a9b40db33517ab9849732834010d0b00c98ca2"
 
-  url "https://devffice.com/download/devffice-#{version}-arm64.dmg"
+  # One universal build: Apple Silicon and Intel.
+  url "https://devffice.com/download/devffice-#{version}-mac.zip"
   name "devffice"
-  desc "Your Mac's terminal and editor, in any browser"
+  desc "Connects your Mac to devffice: terminals, editor and Claude from any browser"
   homepage "https://devffice.com/"
 
-  # Only an Apple Silicon DMG is published. Without this an Intel Mac installs a bundle it cannot
-  # run and finds out at launch; brew should say so first.
-  depends_on arch: :arm64
+  depends_on macos: ">= :monterey"
+  # The daemon the app carries runs on Homebrew's node (22 or newer), by its stable opt path.
+  depends_on formula: "node"
 
   app "devffice.app"
 
-  # Homebrew quarantines what it downloads (Cask::Quarantine.cask! on the download, and the flag is
-  # copied onto the app when it is moved into place). This build carries only an ad-hoc signature,
-  # so a quarantined copy is stopped by Gatekeeper with a dialog whose single button is "Done" —
-  # the way out is System Settings > Privacy & Security > Open Anyway, which is where most people
-  # give up. Removing the flag here is what makes `brew install` open on the first click.
+  # Homebrew quarantines what it downloads. This build carries only an ad-hoc signature, so a
+  # quarantined copy is stopped by Gatekeeper with a dialog whose single button is "Done".
+  # Removing the flag is what makes `brew install` open on the first click — trusting this tap the
+  # way you already trust the app it installs. Delete it the day the app is notarized.
   #
-  # This is a deliberate trade: installing from this tap means trusting it the way you already
-  # trust the app it installs. It is also why this cask belongs in a personal tap and would never
-  # be accepted into homebrew-cask.
-  #
-  # Delete this stanza the day the app is signed with a Developer ID and notarized.
-  postflight_steps do
-    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/devffice.app"]
+  # Then the app opens by itself (architecture 2026-10-26 §0): its window offers Connect to
+  # devffice, and on first start it installs the daemon's launch agent (replacing the one the
+  # older Electron app wrote).
+  postflight do
+    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{appdir}/devffice.app"]
+    system_command "/usr/bin/open", args: ["#{appdir}/devffice.app"]
   end
 
   uninstall quit:      "dev.devffice.app",
             launchctl: "sk.kubanda.devffice"
 
-  # Both live in the user's own home, so they are trashed rather than deleted: Homebrew runs every
-  # `delete:` through sudo, and an uninstall that stops to ask for a password is worse than one that
-  # leaves a plist behind. Kept on uninstall, removed by `brew zap`.
-  #
-  # ~/.devffice holds the machine identity, pairing keys and the daemon log.
+  # Both live in the user's own home, so they are trashed rather than deleted (Homebrew runs every
+  # `delete:` through sudo). Kept on uninstall, removed by `brew zap`. ~/.devffice holds the
+  # machine identity, its keys and the daemon log.
   zap trash: [
     "~/.devffice",
     "~/Library/LaunchAgents/sk.kubanda.devffice.plist",
