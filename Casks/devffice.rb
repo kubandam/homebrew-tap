@@ -1,6 +1,6 @@
 cask "devffice" do
-  version "0.4.0"
-  sha256 "980fe41b612c52b227ee5b8898a9b40db33517ab9849732834010d0b00c98ca2"
+  version "0.4.1"
+  sha256 "88990ce021b21237400fd0f88800cda59882c20226b5ba5436a8c24104019c5e"
 
   # One universal build: Apple Silicon and Intel.
   url "https://devffice.com/download/devffice-#{version}-mac.zip"
